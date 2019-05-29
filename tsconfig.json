@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "build/",
+    "sourceMap": true,
+    "target": "es6",
+    "allowJs": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
