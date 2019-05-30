@@ -5,5 +5,5 @@ const createServer = Monitor({
 });
 
 createServer(async (req: Request, res: Response) => {
-
+  console.log(req, res);
 }).listen('/abc');
