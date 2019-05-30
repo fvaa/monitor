@@ -6,9 +6,6 @@ module.exports = {
   entry: {
     app: './public/test.ts'
   },
-  output: {
-    publicPath: '/api'
-  },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Development',
@@ -25,8 +22,9 @@ module.exports = {
     ]
   },
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: '[name].bundle.[hash:10].js',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/'
   },
   devServer: {
     historyApiFallback: true,

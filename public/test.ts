@@ -1,9 +1,9 @@
-import Monitor from '../src/index';
-const target = Monitor({
-  prefix: '/api'
+import Monitor, { Request, Response } from '../src/index';
+const createServer = Monitor({
+  // prefix: '/api',
+  event: 'popstate'
 });
 
-target.createServer(async function() {
+createServer(async (req: Request, res: Response) => {
 
-})
-console.log(target);
+}).listen('/abc');
