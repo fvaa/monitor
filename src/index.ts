@@ -1,16 +1,17 @@
+import LocationFormatter from './location';
+
+type EventListener = 'hashchange' | 'popstate';
+type AsyncFunctionPromiseLike<T> = () => Promise<T>;
+
 interface MonitorArguments {
   prefix?: string,
-  event?: string
-}
-
-interface MonitorResponse {
-  callback: Function
+  event?: EventListener
 }
 
 export default function Monitor(options: MonitorArguments = {
   prefix: '/',
   event: 'hashchange'
-}): MonitorResponse {
+}) {
   /**
    * In the following two cases, the system will force the listen mode to be converted to `hashchange`:
    *  1. When the `popstate` listen mode is specified, but the system browser does not support.
@@ -23,11 +24,23 @@ export default function Monitor(options: MonitorArguments = {
     options.event = 'hashchange';
   }
 
-  const stacks = [];
+  const { parse } = LocationFormatter(options.prefix);
+  const context: {
+    stacks: Array<AsyncFunctionPromiseLike<void>>,
+    request: object,
+    referer?: string
+  } = {
+    stacks: [],
+    request: {},
+    referer: null
+  }
 
   return {
-    callback(...fns: Array<Function>) {
-      stacks.push(...fns);
+    createServer(...fns: Array<AsyncFunctionPromiseLike<void>>) {
+      context.stacks.push(...fns);
+    },
+    redirect(url: string) {
+      
     }
   }
 }
