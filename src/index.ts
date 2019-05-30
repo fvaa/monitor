@@ -27,7 +27,7 @@ interface MonitorArguments {
 export default function Monitor(options: MonitorArguments = {
   prefix: '/',
   event: 'hashchange',
-}) {
+}): (...fns: Array<AsyncRequestPromiseLike<void>>) => MonitorContext {
   /**
    * In the following two cases, the system will force the listen mode to be converted to `hashchange`:
    *  1. When the `popstate` listen mode is specified, but the system browser does not support.
@@ -112,7 +112,7 @@ export default function Monitor(options: MonitorArguments = {
     });
   });
 
-  return function createServer(...fns: Array<AsyncRequestPromiseLike<void>>) {
+  return function createServer(...fns) {
     return context.callback(...fns);
   }
 }
