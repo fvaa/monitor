@@ -12,9 +12,14 @@ export default class Response {
   }
 
   private redirection(url: string, force: Boolean | undefined | null, callback: Function): CustomResponse {
-    return new Promise((resolve, reject) => {
-      this.context.generator(url, 'router', force, null, err => {
-        if (err) return reject(err);
+    return new Promise(resolve => {
+      this.context.generator(url, 'router', force, null, (err, req, res) => {
+        if (err) {
+          if (this.context.error) {
+            this.context.error(err, req, res);
+          }
+          return resolve();
+        }
         callback && callback();
         resolve();
       });
