@@ -26,6 +26,8 @@ export default class Response {
     });
   }
 
+  // Add a history to the browser 
+  // and perform the current recorded events and behaviors
   redirect(url: string): CustomResponse  {
     return this.redirection(url, false, () => {
       if (this.context.event === 'popstate') {
@@ -36,6 +38,8 @@ export default class Response {
     });
   }
 
+  // Replace the current history for the browser 
+  // and perform the current recorded events and behaviors
   replace(url: string): CustomResponse {
     url = this.context.urlencodeWithPrefix(url);
     return this.redirection(url, false, () => {
@@ -50,6 +54,7 @@ export default class Response {
     });
   }
 
+  // Overloading events and behaviors of the current route
   realod() {
     return this.redirection(this.request.href, true, () => {
       if (this.context.event === 'popstate') {
