@@ -2,7 +2,7 @@
   "name": "@fvaa/monitor",
   "version": "1.0.0",
   "description": "Page monitor and page behavior operation architecture",
-  "main": "dist/monitor.esm.js",
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/fvaa/monitor.git"
