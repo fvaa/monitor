@@ -98,7 +98,7 @@ export default function Monitor(options: MonitorArguments = {
     listen(mapState = {}) {
       const path = this.getCurrentRequest();
       const response = new Response(this);
-      return response.replace(mapState[path] || '/');
+      return response.replace(mapState[path] || path);
     }
   }
 
