@@ -1,6 +1,6 @@
 {
   "name": "@fvaa/monitor",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Page monitor and page behavior operation architecture",
   "repository": {
     "type": "git",
@@ -21,17 +21,19 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "types": "dist/index.d.ts",
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
-    "rollup": "^1.13.1",
-    "rollup-plugin-typescript2": "^0.21.1",
-    "ts-loader": "^6.0.1",
-    "typescript": "^3.5.1",
-    "webpack": "^4.32.2",
-    "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.4.1"
+    "rollup": "^1.17.0",
+    "rollup-plugin-typescript2": "^0.21.2",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
     "@types/url-parse": "^1.4.3",
