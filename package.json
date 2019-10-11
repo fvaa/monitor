@@ -1,6 +1,6 @@
 {
   "name": "@fvaa/monitor",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Page monitor and page behavior operation architecture",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "dev": "webpack-dev-server --open --hot --progress --history-api-fallback",
     "build": "rollup -c"
   },
-  "main": "dist/index.es.js",
+  "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
     "dist"

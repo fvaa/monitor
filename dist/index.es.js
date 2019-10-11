@@ -435,11 +435,3 @@ function Monitor(options) {
 
 export default Monitor;
 export { Context, Request, Response };
-;
-    };
-}
-
-exports.Context = Context;
-exports.Request = Request;
-exports.Response = Response;
-exports.default = Monitor;
