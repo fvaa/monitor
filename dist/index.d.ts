@@ -1,26 +1,33 @@
 import Request from './request';
 import Response from './response';
-export { Request, Response };
+import Context from './context';
+export { Request, Response, Context };
 export declare type MonitorEventListener = 'hashchange' | 'popstate';
 export declare type Methods = 'router' | 'get' | 'post' | 'put' | 'delete';
-export declare type AsyncRequestPromiseLike<T> = (req: Request, res: Response) => Promise<T>;
-export interface MonitorContext {
-    error?(e: Error, req: Request, res: Response): void;
-    prefix: string;
-    event: MonitorEventListener;
-    stacks: Array<AsyncRequestPromiseLike<void>>;
-    referer: string;
+export declare type StackFunction = (ctx: Context) => Promise<any>;
+export interface MonitorReference<T extends Context> {
+    error?(e: Error, ctx: T): void | Promise<void>;
+    start?(ctx: T): void | Promise<void>;
+    stop?(ctx: T): void | Promise<void>;
+    readonly prefix: string;
+    readonly event: MonitorEventListener;
+    readonly stacks: StackFunction[];
+    readonly referer: string;
+    ctx: T | null;
     getCurrentRequest(): string;
-    callback(...fns: Array<AsyncRequestPromiseLike<void>>): MonitorContext;
+    callback(...fns: StackFunction[]): MonitorReference<T>;
     urlencodeWithPrefix(url: string): string;
-    generator(url: string, method: Methods, force: Boolean | undefined | null, body: any, callback?: (e: Error | null, req: Request, res: Response) => any): void;
+    generator<U = any>(url: string, method: Methods, force: Boolean | undefined | null, body: any, callback?: (e: Error | null, ctx: T) => Promise<any>): Promise<U>;
     listen(mapState?: {
         [router: string]: string;
-    }): void;
+    }): Promise<void>;
+    bootstrap: (url: string) => Promise<void>;
 }
-interface MonitorArguments {
+export interface MonitorArguments<T extends Context> {
     prefix?: string;
     event?: MonitorEventListener;
-    error?(e: Error): void;
+    error?(e: Error, ctx: T): void | Promise<void>;
+    start?(ctx: T): void | Promise<void>;
+    stop?(ctx: T): void | Promise<void>;
 }
-export default function Monitor(options?: MonitorArguments): (...fns: Array<AsyncRequestPromiseLike<void>>) => MonitorContext;
+export default function Monitor<T extends Context>(options: MonitorArguments<T>): (...fns: StackFunction[]) => MonitorReference<T>;

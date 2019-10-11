@@ -1,25 +1,34 @@
-import Monitor, { Request, Response } from '../src/index';
+import Monitor from '../src/index';
 const createServer = Monitor({
-  // prefix: '/api',
-  event: 'hashchange'
+  prefix: '/api',
+  event: 'hashchange',
+  error(e, ctx) {
+    console.log(ctx, e)
+  }
 });
 
 
 let installed = false;
 let divs: HTMLElement;
-createServer(async (req: Request, res: Response) => {
+createServer(async (ctx) => {
   if (!installed) {
     const div = document.createElement('div');
     document.body.appendChild(div);
-    div.innerHTML = req.pathname;
+    div.innerHTML = ctx.req.pathname;
     div.addEventListener('click', () => {
-      res.redirect('/a/b/c/d')
+      // ctx.res.redirect('/a/b/c/d')
+      ctx.post('/test').then(console.log)
     });
     installed = true;
     divs = div;
+  } else if (ctx.path === '/test') {
+    // ctx.body = {
+    //   a:1
+    // }
+    throw new Error('sdaf')
   } else {
-    divs.innerHTML = req.pathname
-    console.log(req, res);
+    divs.innerHTML = ctx.req.pathname
+    console.log(ctx);
   }
 }).listen({
   '/': '/abc'

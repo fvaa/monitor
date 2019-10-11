@@ -1,15 +1,18 @@
 import * as Url from 'url-parse';
-import { Methods, MonitorContext } from './index';
-import Response from './response';
+import { Methods } from './index';
+import Context from './context';
 
-export default class Request extends Url {
-  public body: any;
+export default class Request<T extends Context> extends Url {
+  public body: any = null;
+  public state: any = null;
+  public params: {[key: string]: string} = {};
   public referer: string | null;
   public method: Methods;
-  public response: Response;
-  public context: MonitorContext;
+  public ctx: T;
 
-  constructor(address: string) {
+  constructor(ctx: T, address: string, body: any) {
     super(address, true);
+    this.ctx = ctx;
+    this.state = body;
   }
 }

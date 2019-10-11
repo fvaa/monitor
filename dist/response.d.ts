@@ -1,13 +1,14 @@
-import { MonitorContext } from './index';
-import Request from './request';
-declare type CustomResponse = Promise<void | Error>;
-export default class Response {
-    request: Request;
-    context: MonitorContext;
-    constructor(context?: MonitorContext);
+import Context from './context';
+export default class Response<T extends Context> {
+    readonly ctx: T;
+    constructor(ctx: T);
+    private http;
     private redirection;
-    redirect(url: string): CustomResponse;
-    replace(url: string): CustomResponse;
-    realod(): Promise<void | Error>;
+    redirect(url: string): Promise<any>;
+    replace(url: string): Promise<any>;
+    realod(): Promise<any>;
+    get<U = any>(url: string): Promise<U>;
+    post<U = any>(url: string, data?: any): Promise<U>;
+    put<U = any>(url: string, data?: any): Promise<U>;
+    delete<U = any>(url: string): Promise<U>;
 }
-export {};
