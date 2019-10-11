@@ -1,6 +1,6 @@
 {
   "name": "@fvaa/monitor",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Page monitor and page behavior operation architecture",
   "repository": {
     "type": "git",

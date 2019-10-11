@@ -5,18 +5,18 @@ import Context from './context';
 export { Request, Response, Context };
 export type MonitorEventListener = 'hashchange' | 'popstate';
 export type Methods = 'router' | 'get' | 'post' | 'put' | 'delete';
-export type StackFunction = (ctx: Context) => Promise<any>;
+export type StackFunction<T extends Context> = (ctx: T) => Promise<any>;
 export interface MonitorReference<T extends Context> {
   error?(e: Error, ctx: T): void | Promise<void>,
   start?(ctx: T): void | Promise<void>,
   stop?(ctx: T): void | Promise<void>,
   readonly prefix: string,
   readonly event: MonitorEventListener,
-  readonly stacks: StackFunction[],
+  readonly stacks: StackFunction<T>[],
   readonly referer: string,
   ctx: T | null,
   getCurrentRequest(): string,
-  callback(...fns: StackFunction[]): MonitorReference<T>,
+  callback(...fns: StackFunction<T>[]): MonitorReference<T>,
   urlencodeWithPrefix(url: string): string,
   generator<U = any>(
     url: string, 
@@ -153,7 +153,7 @@ export default function Monitor<T extends Context>(options: MonitorArguments<T>)
     });
   });
 
-  return function createServer(...fns: StackFunction[]) {
+  return function createServer(...fns: StackFunction<T>[]) {
     return reference.callback(...fns);
   }
 }
