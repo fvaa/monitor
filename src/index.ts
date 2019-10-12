@@ -45,7 +45,7 @@ export interface MonitorReference<T extends Context> {
 export interface MonitorArguments<T extends Context> {
   prefix?: string,
   event?: MonitorEventListener,
-  error?(e: Error, ctx: T): void | Promise<void>,
+  error?(e: VPCExpection, ctx: T): void | Promise<void>,
   start?(ctx: T): void | Promise<void>,
   stop?(ctx: T): void | Promise<void>,
 }
