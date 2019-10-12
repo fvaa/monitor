@@ -4,6 +4,12 @@ const createServer = Monitor({
   event: 'hashchange',
   error(e, ctx) {
     console.log(ctx, e)
+  },
+  start(ctx) {
+    console.log('start', ctx.path)
+  },
+  stop(ctx) {
+    console.log('stop', ctx.path)
   }
 });
 
@@ -16,19 +22,26 @@ createServer(async (ctx) => {
     document.body.appendChild(div);
     div.innerHTML = ctx.req.pathname;
     div.addEventListener('click', () => {
-      // ctx.res.redirect('/a/b/c/d')
-      ctx.post('/test').then(console.log)
+      console.log('click')
+      ctx.redirect('/abc');
+      // ctx.post('/test').then(console.log)
     });
     installed = true;
     divs = div;
-  } else if (ctx.path === '/test') {
-    // ctx.body = {
-    //   a:1
-    // }
-    throw new Error('sdaf')
+  }
+  if (ctx.path === '/abc') {
+    ctx.redirect('/def')
+  } 
+  else if (ctx.path === '/def') {
+    console.log('in def');
+  }
+  else if (ctx.path === '/test') {
+    ctx.body = {
+      a:1
+    }
   } else {
     divs.innerHTML = ctx.req.pathname
-    console.log(ctx);
+    // console.log(ctx);
   }
 }).listen({
   '/': '/abc'

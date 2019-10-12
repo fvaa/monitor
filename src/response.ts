@@ -19,7 +19,11 @@ export default class Response<T extends Context> {
   }
 
   private redirection<U = any>(url: string, force: Boolean | undefined | null, body: any, callback?: (ctx: T) => void) {
-    return this.http<U>(url, force, 'router', body, callback);
+    if (this.ctx.ref.routing) {
+      this.ctx.ref.pushTask(() => this.http<U>(url, force, 'router', body, callback));
+    } else {
+      this.http<U>(url, force, 'router', body, callback);
+    }
   }
 
   // Add a history to the browser 

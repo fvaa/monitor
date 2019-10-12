@@ -107,7 +107,13 @@ var Response = /** @class */ (function () {
         }); });
     };
     Response.prototype.redirection = function (url, force, body, callback) {
-        return this.http(url, force, 'router', body, callback);
+        var _this = this;
+        if (this.ctx.ref.routing) {
+            this.ctx.ref.pushTask(function () { return _this.http(url, force, 'router', body, callback); });
+        }
+        else {
+            this.http(url, force, 'router', body, callback);
+        }
     };
     // Add a history to the browser 
     // and perform the current recorded events and behaviors
@@ -332,6 +338,16 @@ var Context = /** @class */ (function () {
     return Context;
 }());
 
+var VPCExpection = /** @class */ (function (_super) {
+    __extends(VPCExpection, _super);
+    function VPCExpection(message, status) {
+        var _this = _super.call(this, message) || this;
+        _this.name = 'VPCExpection';
+        _this.status = status;
+        return _this;
+    }
+    return VPCExpection;
+}(Error));
 function Monitor(options) {
     var _this = this;
     /**
@@ -356,6 +372,8 @@ function Monitor(options) {
         stop: options.stop,
         stacks: [],
         ctx: null,
+        microTask: [],
+        routing: false,
         get referer() {
             return reference.ctx ? reference.ctx.req.referer : null;
         },
@@ -381,7 +399,7 @@ function Monitor(options) {
         // into a rule parsing function by customizing the address.
         generator: function (url, method, force, body, callback) {
             return __awaiter(this, void 0, void 0, function () {
-                var ctx, _a, stopInvoked;
+                var ctx, isRouter, _a, stopInvoked;
                 var _this = this;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
@@ -389,8 +407,11 @@ function Monitor(options) {
                             if (!force && reference.referer === url)
                                 return [2 /*return*/];
                             ctx = new Context(url, method, body, reference);
-                            if (method === 'router')
+                            isRouter = method === 'router';
+                            if (isRouter) {
                                 reference.ctx = ctx;
+                                reference.routing = true;
+                            }
                             _a = reference.start;
                             if (!_a) return [3 /*break*/, 2];
                             return [4 /*yield*/, reference.start(ctx)];
@@ -404,7 +425,7 @@ function Monitor(options) {
                                     return __generator(this, function (_a) {
                                         switch (_a.label) {
                                             case 0:
-                                                if (method === 'router')
+                                                if (isRouter)
                                                     reference.ctx.req.referer = url;
                                                 if (!reference.stop) return [3 /*break*/, 2];
                                                 return [4 /*yield*/, reference.stop(ctx)];
@@ -418,10 +439,14 @@ function Monitor(options) {
                                             case 3:
                                                 _a.sent();
                                                 _a.label = 4;
-                                            case 4: return [2 /*return*/, ctx.body];
+                                            case 4:
+                                                if (isRouter)
+                                                    reference.routing = false;
+                                                return [2 /*return*/, ctx.body];
                                         }
                                     });
-                                }); }).catch(function (e) { return __awaiter(_this, void 0, void 0, function () {
+                                }); })
+                                    .catch(function (e) { return __awaiter(_this, void 0, void 0, function () {
                                     var _a;
                                     return __generator(this, function (_b) {
                                         switch (_b.label) {
@@ -439,11 +464,49 @@ function Monitor(options) {
                                                 _a = (_b.sent());
                                                 _b.label = 4;
                                             case 4:
-                                                return [2 /*return*/];
+                                                if (isRouter)
+                                                    reference.routing = false;
+                                                return [2 /*return*/, Promise.reject(e)];
                                         }
                                     });
-                                }); })];
+                                }); })
+                                    .then(function (data) { return __awaiter(_this, void 0, void 0, function () {
+                                    return __generator(this, function (_a) {
+                                        switch (_a.label) {
+                                            case 0: return [4 /*yield*/, reference.execTask()];
+                                            case 1:
+                                                _a.sent();
+                                                return [2 /*return*/, data];
+                                        }
+                                    });
+                                }); })
+                                    .catch(function (e) { })
+                                    .finally(function () {
+                                    if (isRouter)
+                                        reference.routing = false;
+                                })];
                         case 3: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        },
+        pushTask: function (fn) {
+            reference.microTask.push(fn);
+        },
+        execTask: function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var tasks;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!reference.microTask.length)
+                                return [2 /*return*/];
+                            tasks = reference.microTask.slice(0);
+                            reference.microTask = [];
+                            return [4 /*yield*/, Promise.all(tasks.map(function (task) { return Promise.resolve(task()); }))];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
                     }
                 });
             });
@@ -524,4 +587,5 @@ function Monitor(options) {
 exports.Context = Context;
 exports.Request = Request;
 exports.Response = Response;
+exports.VPCExpection = VPCExpection;
 exports.default = Monitor;

@@ -2,12 +2,21 @@ import Request from './request';
 import Response from './response';
 import Context from './context';
 
+export class VPCExpection extends Error {
+  public name = 'VPCExpection';
+  public status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export { Request, Response, Context };
 export type MonitorEventListener = 'hashchange' | 'popstate';
 export type Methods = 'router' | 'get' | 'post' | 'put' | 'delete';
 export type StackFunction<T extends Context> = (ctx: T) => Promise<any>;
 export interface MonitorReference<T extends Context> {
-  error?(e: Error, ctx: T): void | Promise<void>,
+  error?(e: VPCExpection, ctx: T): void | Promise<void>,
   start?(ctx: T): void | Promise<void>,
   stop?(ctx: T): void | Promise<void>,
   readonly prefix: string,
@@ -23,10 +32,14 @@ export interface MonitorReference<T extends Context> {
     method: Methods, 
     force: Boolean | undefined | null, 
     body: any,
-    callback?: (e: Error | null, ctx: T) => Promise<any>
+    callback?: (e: VPCExpection | null, ctx: T) => Promise<any>
   ): Promise<U>,
   listen(mapState?: { [router: string]: string }): Promise<void>,
   bootstrap: (url: string) => Promise<void>,
+  microTask: (Function | (() => Promise<any>))[],
+  pushTask(fn: Function | (() => Promise<any>)): void,
+  execTask(): Promise<void>,
+  routing: boolean,
 }
 
 export interface MonitorArguments<T extends Context> {
@@ -62,6 +75,8 @@ export default function Monitor<T extends Context>(options: MonitorArguments<T>)
     stop: options.stop,
     stacks: [],
     ctx: null,
+    microTask: [],
+    routing: false,
 
     get referer() {
       return reference.ctx ? reference.ctx.req.referer : null;
@@ -89,24 +104,49 @@ export default function Monitor<T extends Context>(options: MonitorArguments<T>)
     async generator(url, method, force, body, callback) {
       if (!force && reference.referer === url) return;
       const ctx = new Context(url, method, body, reference) as T;
-      if (method === 'router') reference.ctx = ctx;
+      const isRouter = method === 'router';
+      if (isRouter) {
+        reference.ctx = ctx;
+        reference.routing = true;
+      }
       reference.start && await reference.start(ctx);
       let stopInvoked = false;
       return await Promise.all(reference.stacks.map(stack => Promise.resolve(stack(ctx))))
         .then(async () => {
-          if (method === 'router') reference.ctx.req.referer = url;
+          if (isRouter) reference.ctx.req.referer = url;
           if (reference.stop) {
             await reference.stop(ctx);
             stopInvoked = true;
           }
           if (callback) await callback(null, ctx);
+          if (isRouter) reference.routing = false;
           return ctx.body;
-        }).catch(async e => {
-          if (!stopInvoked && reference.stop) {
-            await reference.stop(ctx);
-          }
+        })
+        .catch(async (e: VPCExpection) => {
+          if (!stopInvoked && reference.stop) await reference.stop(ctx);
           callback && await callback(e, ctx);
+          if (isRouter) reference.routing = false;
+          return Promise.reject(e);
+        })
+        .then(async data => {
+          await reference.execTask();
+          return data;
+        })
+        .catch(e => {})
+        .finally(() => {
+          if (isRouter) reference.routing = false;
         });
+    },
+
+    pushTask(fn: Function | (() => Promise<any>)) {
+      reference.microTask.push(fn);
+    },
+
+    async execTask() {
+      if (!reference.microTask.length) return;
+      const tasks = reference.microTask.slice(0);
+      reference.microTask = [];
+      await Promise.all(tasks.map(task => Promise.resolve(task())));
     },
 
     // Stack throw function for multi-layer custom events and behaviors

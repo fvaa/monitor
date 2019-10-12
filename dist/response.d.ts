@@ -4,9 +4,9 @@ export default class Response<T extends Context> {
     constructor(ctx: T);
     private http;
     private redirection;
-    redirect(url: string): Promise<any>;
-    replace(url: string): Promise<any>;
-    realod(): Promise<any>;
+    redirect(url: string): void;
+    replace(url: string): void;
+    realod(): void;
     get<U = any>(url: string): Promise<U>;
     post<U = any>(url: string, data?: any): Promise<U>;
     put<U = any>(url: string, data?: any): Promise<U>;
