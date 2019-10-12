@@ -15,8 +15,56 @@ export default class Context {
     this.req.method = method;
   }
 
+  get auth() {
+    return this.req.auth;
+  }
+
+  get hash() {
+    return this.req.hash;
+  }
+
+  get host() {
+    return this.req.host;
+  }
+
+  get hostname() {
+    return this.req.hostname;
+  }
+
+  get href() {
+    return this.req.href;
+  }
+
+  get origin() {
+    return this.req.origin;
+  }
+
+  get password() {
+    return this.req.password;
+  }
+
+  get pathname() {
+    return this.req.pathname;
+  }
+
+  get port() {
+    return this.req.port;
+  }
+
+  get protocol() {
+    return this.req.protocol;
+  }
+
+  get slashes() {
+    return this.req.slashes;
+  }
+
   get method() {
     return this.req.method;
+  }
+
+  get username() {
+    return this.req.username;
   }
 
   get isApi() {

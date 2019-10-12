@@ -8,7 +8,19 @@ export default class Context {
     readonly res: Response<this>;
     readonly ref: MonitorReference<this>;
     constructor(url: string, method: Methods, body: any, reference: any);
+    readonly auth: string;
+    readonly hash: string;
+    readonly host: string;
+    readonly hostname: string;
+    readonly href: string;
+    readonly origin: string;
+    readonly password: string;
+    readonly pathname: string;
+    readonly port: string;
+    readonly protocol: string;
+    readonly slashes: boolean;
     readonly method: Methods;
+    readonly username: string;
     readonly isApi: boolean;
     readonly query: {
         [key: string]: string;

@@ -171,9 +171,93 @@ var Context = /** @class */ (function () {
         this.res = new Response(this);
         this.req.method = method;
     }
+    Object.defineProperty(Context.prototype, "auth", {
+        get: function () {
+            return this.req.auth;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "hash", {
+        get: function () {
+            return this.req.hash;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "host", {
+        get: function () {
+            return this.req.host;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "hostname", {
+        get: function () {
+            return this.req.hostname;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "href", {
+        get: function () {
+            return this.req.href;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "origin", {
+        get: function () {
+            return this.req.origin;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "password", {
+        get: function () {
+            return this.req.password;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "pathname", {
+        get: function () {
+            return this.req.pathname;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "port", {
+        get: function () {
+            return this.req.port;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "protocol", {
+        get: function () {
+            return this.req.protocol;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "slashes", {
+        get: function () {
+            return this.req.slashes;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Context.prototype, "method", {
         get: function () {
             return this.req.method;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Context.prototype, "username", {
+        get: function () {
+            return this.req.username;
         },
         enumerable: true,
         configurable: true
